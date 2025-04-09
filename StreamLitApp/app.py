@@ -297,7 +297,7 @@ preset_models = {
         "baseline_weight": 92.0,
         "baseline_weight_sd": 24.0
     },
-    "Model 3": {
+    "Model 3 (SUSTAIN 7 Trial)": {
         "baseline_hba1c": 8.3,
         "baseline_variability": 0.95,
         "treatment_effect_mean": 1.6,
@@ -307,7 +307,7 @@ preset_models = {
         "baseline_weight": 93.5,
         "baseline_weight_sd": 22.5
     },
-    "Model 4": {
+    "Model 4 (Aggregated Trials)": {
         "baseline_hba1c": 8.2,
         "baseline_variability": 0.8,
         "treatment_effect_mean": 1.7,
@@ -482,7 +482,7 @@ def monte_carlo_simulation_app():
     # Model selection
     model_selection = st.sidebar.radio(
         "Choose a Model or Custom Parameters",
-        ["Model 1 (SUSTAIN 1 Trial)", "Model 2 (SUSTAIN 2 Trial)", "Model 3", "Model 4", "Custom Parameters"]
+        ["Model 1 (SUSTAIN 1 Trial)", "Model 2 (SUSTAIN 2 Trial)", "Model 3 (SUSTAIN 7 Trial)", "Model 4 (Aggregated Trials)", "Custom Parameters"]
     )
     
     # Basic parameters
