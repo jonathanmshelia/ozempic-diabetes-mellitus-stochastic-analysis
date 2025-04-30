@@ -937,7 +937,7 @@ def display_simulation_results(results, model_selection):
         plt.grid(alpha=0.3)
         st.pyplot(fig)
 
-def run_and_display_advanced_analyses(baseline_params, show_sensitivity, show_convergence):
+def run_and_display_advanced_analysis(baseline_params, show_sensitivity):
     """Helper function to run and display advanced analyses"""
     # Run sensitivity analysis if requested
     if show_sensitivity:
@@ -998,65 +998,6 @@ def run_and_display_advanced_analyses(baseline_params, show_sensitivity, show_co
                                    'prop_under_7': 'Patients Reaching HbA1c <7% (%)'},
                             color='prop_under_7', color_continuous_scale='Viridis')
                 st.plotly_chart(fig, use_container_width=True)
-    
-    # Run convergence testing if requested
-    if show_convergence:
-        st.header("Convergence Testing")
-        
-        with st.spinner("Testing convergence..."):
-            # Define simulation counts for convergence testing
-            n_sim_values = [100, 500, 1000, 2000, 5000, 10000]
-            
-            convergence_results = test_convergence(baseline_params, n_sim_values)
-            conv_df = pd.DataFrame(convergence_results)
-            
-            # Create tabs for different convergence metrics
-            tab1, tab2 = st.tabs(["Target Achievement Convergence", "Mean Outcomes Convergence"])
-            
-            with tab1:
-                fig = px.line(conv_df, x='n_simulations', y='prop_under_7',
-                             title="Convergence of Target Achievement Estimate",
-                             labels={'n_simulations': 'Number of Simulations',
-                                    'prop_under_7': 'Patients Reaching HbA1c <7% (%)'},
-                             markers=True)
-                fig.update_traces(line=dict(width=3))
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with tab2:
-                # Prepare data for multiple lines
-                fig = go.Figure()
-                
-                # Add HbA1c reduction convergence
-                fig.add_trace(go.Scatter(
-                    x=conv_df['n_simulations'],
-                    y=conv_df['mean_reduction'],
-                    mode='lines+markers',
-                    name='HbA1c Reduction',
-                    line=dict(width=3, color='blue')
-                ))
-                
-                # Add weight loss convergence on secondary y-axis
-                fig.add_trace(go.Scatter(
-                    x=conv_df['n_simulations'],
-                    y=conv_df['mean_weight_loss'],
-                    mode='lines+markers',
-                    name='Weight Loss',
-                    line=dict(width=3, color='red'),
-                    yaxis='y2'
-                ))
-                
-                # Update layout for dual y-axis
-                fig.update_layout(
-                    title="Convergence of Mean Outcome Estimates",
-                    xaxis=dict(title="Number of Simulations"),
-                    yaxis=dict(title="HbA1c Reduction (%)", titlefont=dict(color="blue")),
-                    yaxis2=dict(title="Weight Loss (kg)", titlefont=dict(color="red"),
-                               overlaying="y", side="right"),
-                    legend=dict(x=0.01, y=0.99),
-                    height=500
-                )
-                
-                st.plotly_chart(fig, use_container_width=True)
 
 def monte_carlo_simulation_app():
     st.title("Monte Carlo Simulation for Clinical Outcomes")
@@ -1077,7 +1018,6 @@ def monte_carlo_simulation_app():
     # Advanced options
     st.sidebar.subheader("Advanced Options")
     show_sensitivity = st.sidebar.checkbox("Run Sensitivity Analysis")
-    show_convergence = st.sidebar.checkbox("Test Convergence")
     
     # Set parameters based on model selection
     if model_selection != "Custom Parameters":
@@ -1114,7 +1054,7 @@ def monte_carlo_simulation_app():
         with st.spinner(f"Running Monte Carlo simulation for {model_selection}..."):
             results = run_monte_carlo_simulation(**baseline_params)
             display_simulation_results(results, model_selection)
-            run_and_display_advanced_analyses(baseline_params, show_sensitivity, show_convergence)
+            run_and_display_advanced_analysis(baseline_params, show_sensitivity)
             
     else:
         # Custom parameters
@@ -1169,7 +1109,7 @@ def monte_carlo_simulation_app():
             with st.spinner("Running Monte Carlo simulation with custom parameters..."):
                 results = run_monte_carlo_simulation(**baseline_params)
                 display_simulation_results(results, "Custom Model")
-                run_and_display_advanced_analyses(baseline_params, show_sensitivity, show_convergence)
+                run_and_display_advanced_analyses(baseline_params, show_sensitivity)
         else:
             # Display instructions when custom simulation hasn't been run
             st.info("Adjust your custom parameters, then click 'Run Simulation' to see results.")
